@@ -848,7 +848,8 @@ class Ward(object):
         Replaces the entire area of the ward with a blank 
         space.
         '''
-        self.wipe(0,0, self.y_outer, self.x_outer, char, offset=False)
+        self.wipe(0,0, self.y_outer, 
+                  self.x_outer, char, offset=False)
         self.draw_border()
         
     def get_minimums(self):
