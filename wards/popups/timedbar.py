@@ -34,7 +34,7 @@ class TimedBar(Window):
         
         for line in message:
             x = int( (self.x_inner - len(line) ) / 2 )
-            self.add_string(y, x, line, style=style)
+            self.add_string(y, x, line)
             y+=1
             
         self.refresh()

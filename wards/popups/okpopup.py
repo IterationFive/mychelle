@@ -35,8 +35,10 @@ class Okpopup( Window ):
                         y_home=y_home, x_home=x_home, 
                         border=border, margin=margin )
         
+        if style is not None:
+            self.name_style('default', style)
         if borderstyle is not None:
-            self.name_style('border', 'borderstyle')
+            self.name_style('border', borderstyle)
         self.show()
         y = 0
         
