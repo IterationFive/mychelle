@@ -23,4 +23,6 @@ from wards.core.container import Container
 from wards.core.keymaster import Keymaster
 from wards.core.window import Window
 from wards.core.screen import Screen
-from wards.core.timedpopup import TimedPopup
+import wards.popups as Popup
+
+
