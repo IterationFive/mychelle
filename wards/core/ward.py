@@ -340,7 +340,8 @@ class Ward(object):
         Returns size of margins, including borders, for each 
         side as top, bottom, left, right
         '''
-        top, bottom, left, right = self.calculate_margins(self.border, self.margin)
+        top, bottom, left, right = self.calculate_margins(
+            self.border, self.margin)
         
         self.y_offset, self.x_offset = top, left
         
@@ -580,7 +581,6 @@ class Ward(object):
             return False
         y,x = self.container_coords(y, x, offset)
         if self.container is not None:
-            if offset: y,x = self.remove_offset(y, x)
             return self.container.add_char(y,x, char, style)
         if offset: y,x = self.remove_offset(y, x)
         if x == self.x_outer - 1 and y == self.y_outer -1:
@@ -709,11 +709,7 @@ class Ward(object):
             char = self.glyphs[char]
         style = self.style(style)
 
-        if offset:
-            y, x = self.remove_offset(y, x)
-            y_limit, x_limit = self.y_inner, self.x_inner
-        else:
-            y_limit, x_limit = self.y_outer, self.x_outer
+        y_limit, x_limit = self.y_outer, self.x_outer
             
         if x >= x_limit or x < 0 or y >= y_limit:
             return False 
@@ -724,6 +720,7 @@ class Ward(object):
             y,x = self.container_coords(y, x, offset)
             self.container.vline(y, x, length, char, style)
         else:
+            if offset:  y, x = self.remove_offset(y, x)
             self.cursewin.vline(y, x, char, length, style)
             
           
