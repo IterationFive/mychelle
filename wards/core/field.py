@@ -130,9 +130,6 @@ class Field(Ward):
         '''
         if align is not None:
             self.align=align
-        if type( contents == str):
-            self.contents = contents.split('\n')
-        else:
-            self.contents = contents
+        self.contents = contents
             
         if refresh: self.update()
