@@ -187,6 +187,7 @@ class Container(Ward):
             
             x_margin = left + right
             y_margin  = top + bottom 
+            y_min, x_min = ward.get_minimums()
             
             if self.orientation == VERTICAL:
                 #off axis sizing is easy
@@ -197,7 +198,7 @@ class Container(Ward):
                 elif ward.x_setting == AUTO:
                     ward.x_outer = offminimum
                 else:
-                    ward.x_outer = ward.x_minimum
+                    ward.x_outer = x_min
                     
                 ward.x_inner = ward.x_outer - x_margin
                     
@@ -221,9 +222,9 @@ class Container(Ward):
                     ward.y_outer = ( ( autominimum * ward.span ) 
                                 + ( ( ward.span - 1 ) * space ) )
                 elif ward.y_setting == MAX:
-                    ward.y_outer = ward.y_minimum + maxpad
+                    ward.y_outer = y_min + maxpad
                 else:
-                    ward.y_outer = ward.y_minimum
+                    ward.y_outer = y_min
                     
                 next_position += ward.y_outer + space 
             
