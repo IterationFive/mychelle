@@ -14,7 +14,8 @@ class Ward(object):
     def __init__(self, container, y_size, x_size, 
                  y_home=0, x_home=0, 
                  y_minimum=None, x_minimum=None, 
-                 border=False, margin=0, span=1):
+                 border=False, margin=0, span=1,
+                 style=None, borderstyle=None):
         '''
         
         :param container: container object or None
@@ -82,6 +83,11 @@ class Ward(object):
         self.visible = False   
         
         self.styles = {}
+        
+        if style is not None:
+            self.name_style('default', style)
+        if borderstyle is not None:
+            self.name_style('border', borderstyle)
         
         self.set_margins()
         self.setup()
