@@ -103,8 +103,8 @@ class Ward(object):
         exceptions during setup(). This is intentional; 
         the output environment is not fully initialized until 
         .show() is run.  While starting content can (and 
-        should!) be provided here, it should not actually
-        be displayed until .update().     
+        should!) be provided here in terms of stored variables, 
+        it should not actually be displayed until .update().     
         '''
         pass
     
@@ -113,6 +113,14 @@ class Ward(object):
         Another structural method for use in child classes.  
         Is run each time a cursewin is shown after being built, 
         hidden, resized, or moved.  
+        '''
+        pass
+        
+    def adjust_contents(self):
+        '''
+        Also for use in child classes. Is executed immediately 
+        before .update().  Is primarily here for the benefit
+        of the Container class.
         '''
         pass
     
@@ -500,6 +508,8 @@ class Ward(object):
         '''
         if glyph in self.screen.glyphs:
             return self.screen.glyphs[glyph]
+        else:
+            return None
                 
     def add_string(self, y, x, string, 
                    style=None, offset=True):  
@@ -730,19 +740,19 @@ class Ward(object):
             self.cursewin.vline(y, x, char, length, style)
             
           
-    def rectangle(self, y,x, y_length, x_length,
+    def rectangle(self, y,x, height, width,
                   chars=None, style=None, offset=True):
         '''
             Draws a rectangle.
         
-        :param x:
-            the starting x coordinate
         :param y: int: 
             the starting y coordinate
-        :param x_length: int
-            the length of the rectangle
-        :param y_length: int
+        :param x:
+            the starting x coordinate
+        :param height: int
             the height of the rectangle
+        :param width: int
+            the length of the rectangle
         :param chars: True, list or string
              True:  Standard lined border
              If string or list contains three characters, 
@@ -781,20 +791,20 @@ class Ward(object):
                         chars[i] = self.screen.glyphs[chars[i]]
                     else:
                         chars[i] = chars[i][0]
-        x_end = x_length + x -1
-        y_end = y_length + y -1
-        x_length -= 2
-        y_length -= 2
+        x_end = width + x -1
+        y_end = height + y -1
+        width -= 2
+        height -= 2
         style = self.style(style)
         
-        self.vline(y + 1, x, y_length, chars[0], style, offset)
-        self.vline( y + 1, x_end,y_length, chars[1], style, offset)
-        self.hline( y, x + 1, x_length, chars[2], style, offset)
-        self.hline( y_end, x + 1, x_length, chars[3], style, offset) 
-        self.add_char(y, x, chars[4], style, offset)
-        self.add_char(y, x_end, chars[5], style, offset)
-        self.add_char(y_end, x, chars[6], style, offset)
-        self.add_char(y_end, x_end, chars[7], style, offset)
+        self.vline( y + 1, x, height, chars[0], style, offset )
+        self.vline( y + 1, x_end, height, chars[1], style, offset )
+        self.hline( y, x + 1, width, chars[2], style, offset )
+        self.hline( y_end, x + 1, width, chars[3], style, offset ) 
+        self.add_char( y, x, chars[4], style, offset )
+        self.add_char( y, x_end, chars[5], style, offset )
+        self.add_char( y_end, x, chars[6], style, offset )
+        self.add_char( y_end, x_end, chars[7], style, offset )
         
     def draw_border(self):
         '''
@@ -846,13 +856,13 @@ class Ward(object):
             for xx in range (x,x+width):
                 self.add_char(yy, xx, char, style, offset)
 
-    def clear(self, char=' '):
+    def clear(self):
         '''
         Replaces the entire area of the ward with a blank 
         space.
         '''
         self.wipe(0,0, self.y_outer, 
-                  self.x_outer, char, offset=False)
+                  self.x_outer, ' ', style='default', offset=False)
         self.draw_border()
         
     def get_minimums(self):
@@ -878,23 +888,22 @@ class Ward(object):
         else:
             # this is a window or screen
             # so we can take its word for it
-            return True     
+            return True
         
-    def show(self):
+    def show(self, enable=False):
         '''
         Sets the state of the ward to visible, clears the 
         screen, draws the border, and updates the contents.
         '''
-        if self.visible == None:
+        if self.visible == None and enable == False:
             # will not auto-enable if disabled
             return 
         self.visible = True
-        self.clear()
-        
-        if hasattr(self, 'adjust_contents'):
+        if self.container is None or self.container.is_visible():
+            self.clear()
             self.adjust_contents()
-        
-        self.update()
+            self.update()
+            self.refresh()
         
     def hide(self, disable=False):
         '''
