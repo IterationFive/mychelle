@@ -218,10 +218,6 @@ class Screen(Keymaster, Container):
         '''
         self.echo(False)
         
-    def show(self):
-        self.refresh()
-        Ward.show(self)
-        
     def hide(self):
         self.visible = False
         curses.endwin()  # @UndefinedVariable 
@@ -324,7 +320,10 @@ class Screen(Keymaster, Container):
         :param color_dict: a dictionary of RGB1000 colors
         '''
         for color in color_dict:
-            self.define_rgb1k_color(color, color_dict[color])
+            self.define_rgb1k_color(color, 
+                                    color_dict[color]['r'],
+                                    color_dict[color]['g'],
+                                    color_dict[color]['b'])
     
     def import_rgb256_colors(self, color_dict ):
         '''
@@ -334,7 +333,10 @@ class Screen(Keymaster, Container):
         :param color_dict: a dictionary of RGB256 colors
         '''
         for color in color_dict:
-            self.define_rgb256_color(color, color_dict[color]) 
+            self.define_rgb256_color(color, 
+                                    color_dict[color]['r'],
+                                    color_dict[color]['g'],
+                                    color_dict[color]['b']) 
     
     def import_hex_colors(self, color_dict ):
         '''
@@ -454,22 +456,3 @@ class Screen(Keymaster, Container):
             self.color_pairs['count'] += 1
         return curses.color_pair(  # @UndefinedVariable 
             self.color_pairs[bg][fg] )
-        
-    def set_attr_alias(self,alias,original):
-        '''
-        Creates a new name to refer to an existing character 
-        cell attribute.
-        
-        WARNING:  Overriding a definied name is destructive.
-        You can make 'italic' really mean 'underline', but 
-        once you do it, you can't put it back without 
-        re-importing the codex of attributes or manually 
-        changing the dictionary entry.  
-        
-        :param alias: string
-            the new name to call the attribute
-        :param original:
-            the existing name of the attribute
-        '''
-        if original in self.attr:
-            self.attr[alias] = self.attr[original]
