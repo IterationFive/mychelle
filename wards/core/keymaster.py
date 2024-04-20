@@ -9,7 +9,7 @@ from wards.codex.keynames import KEYS, PADTRANSLATION
 class Keymaster(object):
     '''
     A simple class to handle keyboard input 
-    using a curses cursewin object.
+    using a curses window object.
     
     Note that cursor location and keyboard echo 
     are NOT managed by this class, as those
@@ -62,7 +62,7 @@ class Keymaster(object):
     def configure_window(self, timeout=-1, activateKeypad=True):
         '''
         
-        Applies the settings to the curses cursewin.  Run
+        Applies the settings to the curses window.  Run
         by the constructor, but can be invoked manually 
         to change settings.
         
@@ -82,7 +82,7 @@ class Keymaster(object):
         self.cursewin.keypad( activateKeypad )
         self.cursewin.timeout( timeout )
   
-    def reversed_kays(self):
+    def reversed_keys(self):
         '''
             provides a dictionary for reverse key
             lookup (getting the ID for the name)
