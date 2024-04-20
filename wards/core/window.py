@@ -9,7 +9,7 @@ from wards import CENTER, TOP, VERTICAL # @UnusedImport
 
 class Window(Keymaster, Container):
     '''
-    A Window ward creates and encapsulates a curses cursewin 
+    A Window ward creates and encapsulates a curses window 
     object and manages its entire area.  
     
     Its constructor has most of the same parameters as 
@@ -27,13 +27,6 @@ class Window(Keymaster, Container):
         Window.show()
         Window.hide()
         
-    The following methods have been added.
-    
-        Window.Window()
-        Window.Subwindow()
-        Window.getKeyID()
-        Window.getKey()
-    
     
     '''
     def __init__(self, screen, y_size=None, x_size=None, 
@@ -46,12 +39,12 @@ class Window(Keymaster, Container):
         
         :param y_size: int or None
         :param x_size: int or None
-            The dimensions of the cursewin.  If both 
-            are None, then the cursewin will be fullscreen.
+            The dimensions of the window.  If both 
+            are None, then the window will be fullscreen.
         
         :param y_home: int
         :param x_home: int
-            The location the top left corner of the cursewin
+            The location the top left corner of the window
             occupies on the parent screen.  These coordinates
             are NOT offset for borders and margins.  If you want
             to use coordinates that are offset, just feed them
@@ -62,8 +55,6 @@ class Window(Keymaster, Container):
             
         :param border:
         :param margin:
-        :param fg:
-        :param bg:
             These properties are identical to those in the 
             Ward class and are passed along without 
             inspection through Container.
