@@ -111,7 +111,7 @@ class Ward(object):
     def update(self):
         '''
         Another structural method for use in child classes.  
-        Is run each time a cursewin is shown after being built, 
+        Is run each time a window is shown after being built, 
         hidden, resized, or moved.  
         '''
         pass
