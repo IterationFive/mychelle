@@ -273,7 +273,8 @@ class Container(Ward):
         if self.x_setting > 0 and self.y_setting > 0:
             return self.x_setting, self.y_setting
 
-        top, bottom, left, right = self.set_margins()
+        top, bottom, left, right = self.calculate_margins(
+                                        self.border, self.margin)
         
         if self.spacing > 0:
             spacing = self.spacing
@@ -342,8 +343,4 @@ class Container(Ward):
             y = y_contents            
     
         return y, x
-    
-    def show(self):
-        Ward.show(self)
-        self.manage_contents()
         
