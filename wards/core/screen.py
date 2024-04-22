@@ -218,6 +218,10 @@ class Screen(Keymaster, Container):
         '''
         self.echo(False)
         
+    def show(self):
+        curses.touchwin() #@UndefinedVariable
+        Container.show(self)
+        
     def hide(self):
         self.visible = False
         curses.endwin()  # @UndefinedVariable 
