@@ -1,41 +1,74 @@
 '''
-Created on Apr 8, 2024
+Created on Apr 11, 2024
 
 @author: IterationFive
 '''
 
-from wards import Container, Ward, Field # @UnusedImport
+
+from wards import Container, Field, Window # @UnusedImport
 from wards import TOP, BOTTOM, RIGHT, CENTER, MIDDLE  # @UnusedImport
 from wards import MIN, MAX, AUTO, VERTICAL  # @UnusedImport
 
-
-class ButtonMenu(Container):
+class ButtonMenu(object):
     '''
     classdocs
     '''
 
+
     def __init__(self, *args, 
-                 style='default', borderstyle='default', 
-                 buttonstyle='reverse', buttonborder='reverse', 
+                 items=None,
+                 buttonstyle=None, 
+                 buttonborderstyle=None,
+                 selectedstyle=None, 
+                 selectedborderstyle=None,
+                 buttonborder=True, 
+                 selectedborder=True,
+                 buttonalign=CENTER, 
+                 selection = -1,  
                  **kwargs):
-                
-        self.items = []
-        self.selection = -1
-        self.buttonborder = True
-        self.buttonmargin = 0
-        self.selectedborder = True 
-        self.buttonalign = CENTER
+        '''
+        
+        :param buttonstyle:
+            The default style for a button
+        :param buttonborderstyle:
+            The button border style
+        :param selectedstyle:
+            Default style for a selected button
+        :param selectedborderstyle:
+            Selected button border style
+        :param buttonborder:
+            True, False, or config  
+        :param selectedborder:
+            True, False or config.
+        :param buttonalign:
+            LEFT, RIGHT, CENTER
+        '''
+        '''
+        Constructor
+        '''
+        if items is None:
+            items = []
+        if selectedstyle is None:
+            selectedstyle = 'reverse'
+        
+        self.items = items
+        self.buttonstyle = buttonstyle
+        self.buttonborderstyle = buttonborderstyle
+        self.selectedstyle = selectedstyle
+        self.selectedborderstyle = selectedborderstyle
+        self.buttonborder = buttonborder
+        self.selectedborder = selectedborder
+        self.buttonalign = buttonalign
+        self.selection = selection
+        
         self.selection_keys = [' ', 'enter', 'padenter']
         self.abort_keys = ['escape','backspace' ]
         
-        Container.__init__(self, *args, **kwargs)
-
-        self.default_local_style('button', style )
-        self.default_local_style('button border', borderstyle)
-        self.default_local_style('selected button', buttonstyle)
-        self.default_local_style('selected border', buttonborder )
         
-    def show(self):
+        super().__init__( *args, **kwargs )
+
+
+    def build_contents(self):
         self.managed_wards = []
         self.buttonkeys = {}
         
@@ -55,28 +88,31 @@ class ButtonMenu(Container):
                     contents=item) 
             
             if i == self.selection:                
-                button.name_style( 'default', 'selected button')
-                button.name_style( 'border', 'selected border')                
+                button.name_style( 'default', self.selectedstyle )
+                button.name_style( 'border',  self.selectedborderstyle)                
             else:                
-                button.name_style( 'default', 'button')
-                button.name_style( 'border', 'button border')
+                button.name_style( 'default', self.buttonstyle)
+                button.name_style( 'border', self.buttonborderstyle)
                 
             self.managed_wards.append(button)
             
-        Container.show(self)
+    def show(self,*args):
+        if len (self.managed_wards) == 0:
+            self.build_contents()
+        super().show(*args)
         
     def select(self):
         b = self.managed_wards[self.selection]
-        b.name_style( 'border', 'selected border')
-        b.name_style( 'default', 'selected button' )
+        b.name_style( 'border', self.selectedselectedstyle )
+        b.name_style( 'default', self.selectedstyle )
         b.show()
              
     def deselect(self):
         b = self.managed_wards[self.selection]
-        b.name_style( 'border', 'button border')
-        b.name_style( 'default', 'button' )
-        b.show()
-    
+        b.name_style( 'border', self.buttonborderstyle)
+        b.name_style( 'default', self.buttonstyle )
+        b.show()    
+
     def get_selection(self, selection=None,
                         translateKeypad=True, 
                         forceLowercase=True,
@@ -116,3 +152,10 @@ class ButtonMenu(Container):
                     return False                
             elif key in self.selection_keys:
                 return self.selection
+
+class ButtonMenuBox(ButtonMenu,Container):
+    pass
+
+class ButtonMenuWindow(ButtonMenu,Window):
+    pass
+
