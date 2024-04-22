@@ -24,7 +24,7 @@ class Container(Ward):
         
         Ward.__init__(self, *args, **kwargs)
 
-    def manage_contents(self):
+    def adjust_contents(self):
                
         if self.orientation == VERTICAL:
             available_space = self.y_inner
