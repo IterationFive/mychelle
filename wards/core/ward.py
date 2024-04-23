@@ -207,7 +207,9 @@ class Ward(object):
             a style definition
             
         '''
-        if type(options) != list:
+        if options is None:
+            options = ['default']
+        elif type(options) != list:
             options = options.split(",")
         option = options.pop(0).lower().strip()
         
