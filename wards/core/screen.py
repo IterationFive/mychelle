@@ -4,7 +4,7 @@ Created on Feb 14, 2023
 @author: IterationFive
 '''
 import curses
-from wards import ( Ward, Container, Keymaster, codex,
+from wards import ( Container, Keymaster, codex,
                     VERTICAL, HORIZONTAL, # @UnusedImport
                     LEFT, RIGHT, # @UnusedImport 
                     TOP, BOTTOM,  # @UnusedImport
@@ -219,7 +219,7 @@ class Screen(Keymaster, Container):
         self.echo(False)
         
     def show(self):
-        curses.touchwin() #@UndefinedVariable
+        self.cursewin.touchwin() #@UndefinedVariable
         Container.show(self)
         
     def hide(self):
