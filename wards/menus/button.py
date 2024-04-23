@@ -24,6 +24,7 @@ class ButtonMenu(object):
                  buttonborder=True, 
                  selectedborder=True,
                  buttonalign=CENTER, 
+                 buttonmargin=0,
                  selection = -1,  
                  **kwargs):
         '''
@@ -46,6 +47,8 @@ class ButtonMenu(object):
         '''
         Constructor
         '''
+        super().__init__( *args, **kwargs )
+        
         if items is None:
             items = []
         if selectedstyle is None:
@@ -59,13 +62,13 @@ class ButtonMenu(object):
         self.buttonborder = buttonborder
         self.selectedborder = selectedborder
         self.buttonalign = buttonalign
+        self.buttonmargin = buttonmargin
         self.selection = selection
         
         self.selection_keys = [' ', 'enter', 'padenter']
         self.abort_keys = ['escape','backspace' ]
         
         
-        super().__init__( *args, **kwargs )
 
 
     def build_contents(self):
@@ -90,7 +93,7 @@ class ButtonMenu(object):
             if i == self.selection:                
                 button.name_style( 'default', self.selectedstyle )
                 button.name_style( 'border',  self.selectedborderstyle)                
-            else:                
+            else:
                 button.name_style( 'default', self.buttonstyle)
                 button.name_style( 'border', self.buttonborderstyle)
                 
@@ -103,14 +106,19 @@ class ButtonMenu(object):
         
     def select(self):
         b = self.managed_wards[self.selection]
-        b.name_style( 'border', self.selectedselectedstyle )
         b.name_style( 'default', self.selectedstyle )
+        b.name_style( 'border', self.selectedborderstyle )
         b.show()
              
     def deselect(self):
         b = self.managed_wards[self.selection]
+        if self.buttonstyle == 'default' or self.buttonstyle is None:
+            # the definition of 'default' may have been 
+            # overriden
+            b.styles['default'] = self.find_style('default')
+        else:          
+            b.name_style( 'default', self.buttonstyle )
         b.name_style( 'border', self.buttonborderstyle)
-        b.name_style( 'default', self.buttonstyle )
         b.show()    
 
     def get_selection(self, selection=None,
