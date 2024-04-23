@@ -25,7 +25,8 @@ class ButtonMenu(object):
                  selectedborder=True,
                  buttonalign=CENTER, 
                  buttonmargin=0,
-                 selection = -1,  
+                 selection = -1,
+                 border=True,
                  **kwargs):
         '''
         
@@ -47,7 +48,7 @@ class ButtonMenu(object):
         '''
         Constructor
         '''
-        super().__init__( *args, **kwargs )
+        super().__init__( *args, border=border, **kwargs )
         
         if items is None:
             items = []
@@ -165,5 +166,67 @@ class ButtonMenuBox(ButtonMenu,Container):
     pass
 
 class ButtonMenuWindow(ButtonMenu,Window):
-    pass
+    
+    
+    def __init__(self, parent, 
+                items = None,
+                buttonborder=True, 
+                buttonmargin=0, 
+                border = True,
+                margin = 0, 
+                orientation = VERTICAL,
+                spacing=0,
+                **kwargs):
+        top, bottom, left, right = self.calculate_margins(border, margin)
+        
+        width = left + right
+        height = top + bottom
+        
+        
+        top, bottom, left, right = self.calculate_margins(
+            buttonborder, buttonmargin)
+        
+        bwidth = 0
+        bheight = 0
+        
+        for i in items:
+            lines = i[0].split('\n')
+        
+            if orientation == VERTICAL:
+                bheight += top + bottom + len( lines ) + spacing
+                for line in lines:
+                    if len(line) + left +right  > bwidth :
+                        bwidth = len( line ) + left + right 
+            else:
+                w = 0
+                for line in lines:
+                    if len(line) > w:
+                        w = len(line)
+                bwidth += w + left + right + spacing
+                if top+bottom+len(lines) > bheight:
+                    bheight = top+bottom+len(lines)
+                    
+        if orientation == VERTICAL:
+            bheight -= spacing
+        else:
+            bwidth -= spacing
+            
+        height += bheight
+        width += bwidth            
+        
+        y_home = int( ( parent.y_outer - height ) / 2 )
+        x_home = int( ( parent.x_outer - width  ) / 2 )
+        
+        y_home, x_home = parent.window_coords( y_home, x_home )
+        
+        ButtonMenu.__init__(self, parent.screen, height, width, 
+                        y_home=y_home, x_home=x_home, 
+                        border=border, margin=margin,
+                        orientation = VERTICAL,
+                        spacing=0,
+                        buttonborder=buttonborder, 
+                        buttonmargin=buttonmargin, 
+                        items = items,
+                        **kwargs)
+        
 
