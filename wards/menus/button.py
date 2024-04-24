@@ -136,17 +136,7 @@ class ButtonMenu(object):
             key = self.window.get_key_by_name(
                 translateKeypad, forceLowercase )
             
-            if key == 'down' and navkeys == True:       
-                if self.selection < len( self.items ) - 1 :
-                    self.deselect()
-                    self.selection += 1
-                    self.select()
-            elif key == 'up' and navkeys == True:
-                if self.selection > 0:
-                    self.deselect()
-                    self.selection -= 1
-                    self.select()
-            elif key in self.buttonkeys:
+            if key in self.buttonkeys:
                 self.deselect()
                 self.selection = self.buttonkeys[key]
                 self.select()
@@ -161,6 +151,23 @@ class ButtonMenu(object):
                     return False                
             elif key in self.selection_keys:
                 return self.selection
+            elif navkeys == True: 
+                if ( self.selection < len( self.items ) - 1
+                     and ( 
+                     ( self.orientation == VERTICAL and key == 'down') 
+                     or
+                     ( self.orientation != VERTICAL and key == 'right') ) ):
+                    self.deselect()
+                    self.selection += 1
+                    self.select()
+                elif ( self.selection > 0
+                     and ( 
+                     ( self.orientation == VERTICAL and key == 'up') 
+                     or
+                     ( self.orientation != VERTICAL and key == 'left') ) ):
+                    self.deselect()
+                    self.selection -= 1
+                    self.select()
 
 class ButtonMenuBox(ButtonMenu,Container):
     pass
