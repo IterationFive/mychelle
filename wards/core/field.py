@@ -19,7 +19,7 @@ class Field(Ward):
 
 
     def __init__(self, *args, 
-                 contents='', align=LEFT, 
+                 contents='', align=CENTER, 
                  **kwargs):
         '''
         Constructor
