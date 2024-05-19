@@ -4,16 +4,21 @@ Created on Feb 14, 2023
 @author: IterationFive
 '''
 import curses
+from threading import Thread
 from wards import ( Container, Keymaster, codex,
                     VERTICAL, HORIZONTAL, # @UnusedImport
                     LEFT, RIGHT, # @UnusedImport 
                     TOP, BOTTOM,  # @UnusedImport
                     MIDDLE, CENTER, CENTRE) # @UnusedImport
+
+SHRINK_DELAY = 250
+
+
 class Screen(Keymaster, Container):
     '''
-    The Screen object encapsulates and manages the cursewin 
-    that is the main curses screen.  It also serves as the 
-    repository for the dictionaries of colors, glyphs, and 
+    The Screen object encapsulates and manages the main 
+    curses screen.  It also serves as the repository for 
+    the dictionaries of colors, glyphs, and 
     attributes, and handles all color management.
     
     Note that color management, while made easier to access,
@@ -22,8 +27,12 @@ class Screen(Keymaster, Container):
     
     def __init__(self, y_size=None, x_size=None, 
                  x_align=CENTER, y_align=TOP, 
-                 orientation = VERTICAL, spacing=0, 
-                 border=False, margin=0,  
+                 orientation = VERTICAL, 
+                 spacing=0, 
+                 border=False, 
+                 borderstyle=None,
+                 margin=0,
+                 resizeable=True,  
                  codex=codex):
         '''
         :param y_size:
@@ -65,20 +74,17 @@ class Screen(Keymaster, Container):
             ( (left, right), (top, bottom) )
             ( (left, right), top_and_bottom )
             ( left_and_right, (top, bottom) )
-        :param fg:
-            string or None
-            The default foreground color.  If None, will 
-            inherit from container.
-        :param bg:
-            string or None
-            The default background color.  If None, will 
-            inherit from container.
+        :param resizable: 
+            boolean, default True
+            allows the user to resize the window.  If False, the window 
+            will snap back to its original size.
         :param codex:
             A package or dictionary containing dictionaries 
             for attributes, colors, and glyphs. 
 
         '''
         self.cursewin = curses.initscr() # @UndefinedVariable
+        self.resizeable = resizeable
         self.screen = self
         self.window = self
         self.cursor_off() #establishes cursor_state
@@ -161,9 +167,54 @@ class Screen(Keymaster, Container):
                     y_minimum=y_size, x_minimum=x_size, 
                     y_align=y_align, x_align=x_align, 
                     orientation=orientation, spacing=spacing, 
-                    border=border, margin=margin)
+                    border=border, borderstyle=borderstyle,
+                    margin=margin)
         
-        self.default_local_style('default', 'white,black')
+        self.default_local_style('default', 'white,black')        
+        
+    def sizer(self):
+        self.__sizing = True
+        
+        while self.__sizing:
+            y_now, x_now = self.cursewin.getmaxyx()
+            
+            if y_now != self.y_outer or x_now != self.x_outer:
+                
+                if self.resizeable:
+                    
+                    timer = 0
+                    
+                    while True:
+                           
+                        self.nap(50)
+                        
+                        y,x = self.cursewin.getmaxyx()
+                        
+                        if y == y_now and x == x_now:
+                            timer += 50
+                        else:
+                            y_now = y
+                            x_now = x
+                            timer = 0
+                            
+                        if timer >= SHRINK_DELAY:
+                            break
+                
+                    '''
+                    The window has been resized and has
+                    stayed a consistent size
+                    for SHRINK_DELAY.                   
+                    '''
+                    self.y_outer = y_now
+                    self.x_outer = x_now
+                    self.set_margins()
+                    
+                else:
+                    curses.resize_term( # @UndefinedVariable
+                        self.y_outer, self.x_outer )
+                self.show()
+                    
+            self.nap(125)
 
     def cursor_off(self):
         '''
@@ -220,10 +271,15 @@ class Screen(Keymaster, Container):
         
     def show(self):
         self.cursewin.touchwin() #@UndefinedVariable
+        self.cursor_set( self.cursor_state )
+        self.__sizing = True
+        self.__sizer = Thread( target = self.sizer)
+        self.__sizer.start()
         Container.show(self)
         
     def hide(self):
         self.visible = False
+        self.__sizing = False
         curses.endwin()  # @UndefinedVariable 
     
     def rgb256_to_1k(self, r,g,b):
